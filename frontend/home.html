@@ -1,15 +1,229 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Statystyki</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-    Welcome {{ current_user.username }}!
-    <a href="/logout">Logout</a>
-</body>
+{% set divClass = 'col-4 col-sm-12 col-lg-4' %}
+{% set tableClass = 'table table-bordered table-striped table-condensed' %}
 
+<div style="position: fixed; top: 0; right: 0; background-color: white; border: solid black 2px; padding: 3px">
+    Witaj {{ current_user.username }}!
+    <a href="/logout">Wyloguj</a>
+</div>
+
+<div style="padding: 15px; width: 100%; margin-top: 15px;">
+    <div class="row">
+        <div class="{{ divClass }}">
+            <h1 class="text-center">Statystyki 2021</h1>
+            <table class="{{ tableClass }}">
+                <tr>
+                    <th>Mediana</th>
+                    <td>{{ stats2021['median'] }}</td>
+                </tr>
+                <tr>
+                    <th>Średnia</th>
+                    <td>{{ stats2021['avg'] }}</td>
+                </tr>
+                <tr>
+                    <th>Liczba imion</th>
+                    <td>{{ stats2021['names_count'] }}</td>
+                </tr>
+                <tr>
+                    <th>Maksymalna wartość</th>
+                    <td>{{ stats2021['max_val'] }}</td>
+                </tr>
+                <tr>
+                    <th>Minimalna wartość</th>
+                    <td>{{ stats2021['min_val'] }}</td>
+                </tr>
+            </table>
+
+            <table class="{{ tableClass }}">
+                <tr>
+                    <th class="text-center" colspan="2">
+                        <h2 class="text-center">Posortowane imiona</h2>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Imię</th>
+                    <th>Liczba wystąpień</th>
+                </tr>
+                {% for name, num_appearances in stats2021['sorted_names'] %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ num_appearances }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div style="height: 30vh;">
+                <canvas id="stats2021Chart"></canvas>
+            </div>
+        </div>
+
+
+        <div class="{{ divClass }}">
+            <h1 class="text-center">Statystyki 2022</h1>
+            <table class="{{ tableClass }}">
+                <tr>
+                    <th>Mediana</th>
+                    <td>{{ stats2022['median'] }}</td>
+                </tr>
+                <tr>
+                    <th>Średnia</th>
+                    <td>{{ stats2022['avg'] }}</td>
+                </tr>
+                <tr>
+                    <th>Liczba imion</th>
+                    <td>{{ stats2022['names_count'] }}</td>
+                </tr>
+                <tr>
+                    <th>Maksymalna wartość</th>
+                    <td>{{ stats2022['max_val'] }}</td>
+                </tr>
+                <tr>
+                    <th>Minimalna wartość</th>
+                    <td>{{ stats2022['min_val'] }}</td>
+                </tr>
+            </table>
+
+            <table class="{{ tableClass }}">
+                <tr>
+                    <th class="text-center" colspan="2">
+                        <h2 class="text-center">Posortowane imiona</h2>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Imię</th>
+                    <th>Liczba wystąpień</th>
+                </tr>
+                {% for name, num_appearances in stats2022['sorted_names'] %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ num_appearances }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div style="height: 30vh;">
+                <canvas id="stats2022Chart"></canvas>
+            </div>
+        </div>
+
+
+        <div class="{{ divClass }}">
+            <h1 class="text-center">Statystyki 2023</h1>
+            <table class="{{ tableClass }}">
+                <tr>
+                    <th>Mediana</th>
+                    <td>{{ stats2023['median'] }}</td>
+                </tr>
+                <tr>
+                    <th>Średnia</th>
+                    <td>{{ stats2023['avg'] }}</td>
+                </tr>
+                <tr>
+                    <th>Liczba imion</th>
+                    <td>{{ stats2023['names_count'] }}</td>
+                </tr>
+                <tr>
+                    <th>Maksymalna wartość</th>
+                    <td>{{ stats2023['max_val'] }}</td>
+                </tr>
+                <tr>
+                    <th>Minimalna wartość</th>
+                    <td>{{ stats2023['min_val'] }}</td>
+                </tr>
+            </table>
+
+            <table class="{{ tableClass }}">
+                <tr>
+                    <th class="text-center" colspan="2">
+                        <h2 class="text-center">Posortowane imiona</h2>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Imię</th>
+                    <th>Liczba wystąpień</th>
+                </tr>
+                {% for name, num_appearances in stats2023['sorted_names'] %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ num_appearances }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div style="height: 30vh;">
+                <canvas id="stats2023Chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const stats2021Data = {
+        labels: {{ stats2021['sorted_names_names'] | tojson}},
+        datasets: [{
+            label: 'Liczba wystąpień',
+            {#backgroundColor: 'rgb(255, 99, 132)',#}
+            {#borderColor: 'rgb(255, 99, 132)',#}
+            data: {{ stats2021['sorted_names_values'] | tojson}},
+        }]
+    };
+
+    const stats2022Data = {
+        labels: {{ stats2022['sorted_names_names'] | tojson}},
+        datasets: [{
+            label: 'Liczba wystąpień',
+            {#backgroundColor: 'rgb(255, 99, 132)',#}
+            {#borderColor: 'rgb(255, 99, 132)',#}
+            data: {{ stats2022['sorted_names_values'] | tojson}},
+        }]
+    };
+
+    const stats2023Data = {
+        labels: {{ stats2023['sorted_names_names'] | tojson}},
+        datasets: [{
+            label: 'Liczba wystąpień',
+            {#backgroundColor: 'rgb(255, 99, 132)',#}
+            {#borderColor: 'rgb(255, 99, 132)',#}
+            data: {{ stats2023['sorted_names_values'] | tojson}},
+        }]
+    };
+
+    const stats2021Config = {
+        type: 'bar',
+        data: stats2021Data,
+        options: { maintainAspectRatio: false }
+    };
+
+    const stats2022Config = {
+        type: 'bar',
+        data: stats2022Data,
+        options: { maintainAspectRatio: false }
+    };
+
+    const stats2023Config = {
+        type: 'bar',
+        data: stats2023Data,
+        options: { maintainAspectRatio: false }
+    };
+
+    const stats2021Chart = new Chart(
+        document.getElementById('stats2021Chart'),
+        stats2021Config
+    );
+
+    const stats2022Chart = new Chart(
+        document.getElementById('stats2022Chart'),
+        stats2022Config
+    );
+
+    const stats2023Chart = new Chart(
+        document.getElementById('stats2023Chart'),
+        stats2023Config
+    );
+</script>
+</body>
 </html>

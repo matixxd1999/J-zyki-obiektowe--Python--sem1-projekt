@@ -19,7 +19,7 @@ def show():
         if username and email and password and confirm_password:
             if password == confirm_password:
                 hashed_password = generate_password_hash(
-                    password, method='sha256')
+                    password, method='pbkdf2:sha256')
                 try:
                     new_user = Users(
                         username=username,
