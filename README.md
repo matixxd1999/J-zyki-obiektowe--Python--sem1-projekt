@@ -1,11 +1,20 @@
-# Flask-Login-Register
-A Simple Login &amp; Register Page Using Flask.
+# Flask
+Analiza statystyczna żeńskich imion w latach.
 
-Creating the database:
+Uruchamianie projektu:
 ```
 pip3 install -r requirements.txt
-cd backend
-python3
-from app import db
-db.create_all()
 ```
+
+```
+cd backend
+```
+
+```
+flask run
+```
+
+[//]: # (python3)
+[//]: # (from app import db)
+[//]: # (db.create_all&#40;&#41;)
+
